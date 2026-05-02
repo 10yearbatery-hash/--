@@ -138,21 +138,17 @@ function ChatPageInner() {
     setSessionDone(true)
   }
 
-  const stageTag = STAGE_TAGS[currentQuestion] || '마무리'
   const isFinishStep = currentQuestion >= 5
 
   return (
-    <main className="h-dvh flex flex-col bg-[#FFF5F8] overflow-hidden">
+    <main className="h-dvh flex flex-col bg-white overflow-hidden">
       <Header
-        title="본심 상담"
+        title="대화하기"
         showBack
         roomCode={roomCode}
-        rightSlot={
-          <span className="text-xs bg-[#FFD6E7] text-[#FF6B9D] px-2 py-1 rounded-full font-medium">
-            {stageTag}
-          </span>
-        }
       />
+      {/* 핑크 진행바 */}
+      <div className="h-[3px] bg-gradient-pink" />
 
       {/* 메시지 목록 */}
       <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4">
@@ -161,7 +157,6 @@ function ChatPageInner() {
         ))}
         {isTyping && <TypingIndicator />}
 
-        {/* 세션 완료 후 상태 메시지 */}
         {sessionDone && (
           <>
             {(roomStatus === 'WAITING' || roomStatus === 'A_DONE' || roomStatus === 'B_DONE') && (
@@ -180,15 +175,14 @@ function ChatPageInner() {
             )}
           </>
         )}
-
         <div ref={bottomRef} />
       </div>
 
       {/* 입력창 */}
       {!sessionDone && (
-        <div className="px-5 py-3 border-t border-[#F0D0DC] bg-[#FFF5F8] flex gap-2 items-end">
+        <div className="px-4 py-3 border-t border-bborder bg-white flex gap-2 items-end">
           <textarea
-            className="flex-1 bg-white border border-[#F0D0DC] rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-[#FF6B9D] resize-none min-h-[40px] max-h-[120px]"
+            className="flex-1 bg-bp-input border border-bborder rounded-2xl px-4 py-2.5 text-[14px] text-bd focus:outline-none focus:border-bp resize-none min-h-[44px] max-h-[120px] placeholder:text-bc"
             placeholder="솔직하게 털어놔 보세요..."
             rows={1}
             value={input}
@@ -200,11 +194,13 @@ function ChatPageInner() {
             disabled={isTyping}
           />
           <button
-            className="w-10 h-10 rounded-full bg-[#FF6B9D] text-white flex items-center justify-center flex-shrink-0 disabled:opacity-50 mb-0.5"
+            className="w-11 h-11 rounded-full bg-gradient-pink text-white flex items-center justify-center flex-shrink-0 disabled:opacity-50 mb-0.5"
             onClick={isFinishStep ? finishSession : sendMessage}
             disabled={isTyping || (!input.trim() && !isFinishStep)}
           >
-            →
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M4 9h10M9 4l5 5-5 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
         </div>
       )}
@@ -214,7 +210,7 @@ function ChatPageInner() {
 
 export default function ChatPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-[#FF6B9D]">로딩 중...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-bp font-jua">로딩 중...</div>}>
       <ChatPageInner />
     </Suspense>
   )
