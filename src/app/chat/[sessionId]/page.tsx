@@ -9,14 +9,6 @@ import { getSessionToken } from '@/lib/utils/session-token'
 import { createClient } from '@/lib/supabase/client'
 import type { RoomStatus } from '@/types'
 
-const STAGE_TAGS: Record<number, string> = {
-  1: '상처 확인',
-  2: '상처 확인',
-  3: '진심 발견',
-  4: '입장 바꾸기',
-  5: '마무리',
-}
-
 const FIRST_MESSAGE = `안녕하세요 💗\n이 공간은 슬픔을 가리는 곳이 아니에요. 서로의 진심을 발견하고, 관계를 회복하는 데 함께하고 싶어요.\n\n먼저, 두 분이 부딪히게 된 '그 상황' 자체에 대해 듣고 싶어요. 감정을 조금 덜어내고, 어떤 일이 있었는지 있는 그대로 편하게 말씀해 주시겠어요?`
 
 interface ChatMessage {
