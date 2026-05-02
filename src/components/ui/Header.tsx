@@ -24,7 +24,7 @@ export default function Header({ title, showBack = false, onBack, rightSlot, roo
         {title && <span className="font-semibold text-[#1A1A1A]">{title}</span>}
         {roomCode && <span className="text-xs text-[#FF6B9D] font-mono">#{roomCode}</span>}
       </div>
-      <div className="w-10 flex justify-end">
+      <div className="flex justify-end">
         {rightSlot}
       </div>
     </header>
