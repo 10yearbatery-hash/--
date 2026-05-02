@@ -5,6 +5,7 @@ import {
   buildSystemPrompt,
   buildMessageHistory,
   MARK_QUESTION_SATISFIED_TOOL,
+  PRD_QUESTIONS,
 } from '@/lib/claude/chat'
 
 export const maxDuration = 60
@@ -64,41 +65,29 @@ export async function POST(
   )
   const history = await buildMessageHistory(sessionId)
 
-  // 스트리밍 대신 일반 API 호출 (안정성 향상)
+  // Claude 1번만 호출 (공감 멘트 생성 + tool 호출)
   const msg = await anthropic.messages.create({
     model: 'claude-sonnet-4-5-20250929',
-    max_tokens: 1024,
+    max_tokens: 256, // 공감 한 줄만 생성하므로 토큰 절감 → 빠른 응답
     system: systemPrompt,
     messages: history,
     tools: [MARK_QUESTION_SATISFIED_TOOL],
   })
 
-  // 텍스트 추출
-  let aiText = ''
+  let empathyText = ''
   let toolUseData: { question: number; summary: string } | null = null
 
   for (const block of msg.content) {
     if (block.type === 'text') {
-      aiText += block.text
+      empathyText += block.text
     }
     if (block.type === 'tool_use' && block.name === 'mark_question_satisfied') {
       toolUseData = block.input as { question: number; summary: string }
     }
   }
 
-  // AI 메시지 저장
-  if (aiText) {
-    await supabase.from('messages').insert({
-      session_id: sessionId,
-      role: 'ai',
-      content: aiText,
-      question_stage: session.current_question,
-    })
-  }
-
-  // 질문 충족 처리 및 다음 질문 생성
   let nextQuestion: number | null = null
-  let nextAiText = ''
+  let finalText = empathyText
 
   if (toolUseData) {
     const qKey = `q${toolUseData.question}_summary`
@@ -109,37 +98,27 @@ export async function POST(
       .update({ [qKey]: toolUseData.summary, current_question: nextQuestion })
       .eq('id', sessionId)
 
-    // 다음 질문이 있으면 즉시 AI에게 다음 질문 생성 요청
-    if (nextQuestion <= 4) {
-      const updatedHistory = await buildMessageHistory(sessionId)
-      const nextSystemPrompt = buildSystemPrompt(
-        room.keyword,
-        session.participant_name,
-        partnerName,
-        nextQuestion
-      )
-      const nextMsg = await anthropic.messages.create({
-        model: 'claude-sonnet-4-5-20250929',
-        max_tokens: 512,
-        system: nextSystemPrompt,
-        messages: updatedHistory,
-      })
-      for (const block of nextMsg.content) {
-        if (block.type === 'text') nextAiText += block.text
-      }
-      if (nextAiText) {
-        await supabase.from('messages').insert({
-          session_id: sessionId,
-          role: 'ai',
-          content: nextAiText,
-          question_stage: nextQuestion,
-        })
-      }
+    // 다음 질문은 PRD 고정 텍스트 사용 (Claude 2번 호출 불필요)
+    const nextQuestionText = PRD_QUESTIONS[nextQuestion]
+    if (nextQuestionText) {
+      finalText = empathyText
+        ? `${empathyText.trim()}\n\n${nextQuestionText}`
+        : nextQuestionText
     }
   }
 
+  // AI 응답 저장
+  if (finalText) {
+    await supabase.from('messages').insert({
+      session_id: sessionId,
+      role: 'ai',
+      content: finalText,
+      question_stage: session.current_question,
+    })
+  }
+
   return NextResponse.json({
-    text: aiText || nextAiText,
+    text: finalText,
     questionAdvance: nextQuestion,
   })
 }
