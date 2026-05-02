@@ -4,7 +4,6 @@ import { useParams, useRouter } from 'next/navigation'
 import Header from '@/components/ui/Header'
 import ProgressSteps from '@/components/ui/ProgressSteps'
 import Button from '@/components/ui/Button'
-import Modal from '@/components/ui/Modal'
 import StepSituation from '@/components/result/StepSituation'
 import StepTruths from '@/components/result/StepTruths'
 import StepTranslation from '@/components/result/StepTranslation'
@@ -32,7 +31,6 @@ function ResultPageInner() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(true)
   const [saveLoading, setSaveLoading] = useState(false)
-  const [showModal, setShowModal] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -51,16 +49,19 @@ function ResultPageInner() {
 
   async function handleSave(selected: string[], custom: string[]) {
     const profileId = getProfileId()
-    if (!profileId) {
-      router.push(`/login?redirect=${encodeURIComponent(`/result/${roomId}`)}`)
-      return
-    }
-    setSaveLoading(true)
     const promises = [
       ...selected.map((c) => ({ content: c, isCustom: false })),
       ...custom.map((c) => ({ content: c, isCustom: true })),
     ]
 
+    // 비로그인 시 약속 데이터를 sessionStorage에 보관 후 로그인으로 이동
+    if (!profileId) {
+      sessionStorage.setItem('pendingPromises', JSON.stringify({ roomId, promises }))
+      router.push('/login?redirect=/promises')
+      return
+    }
+
+    setSaveLoading(true)
     const res = await fetch('/api/promises', {
       method: 'POST',
       headers: {
@@ -69,11 +70,10 @@ function ResultPageInner() {
       },
       body: JSON.stringify({ roomId, promises }),
     })
-
     setSaveLoading(false)
 
     if (res.ok) {
-      setShowModal(true)
+      router.push('/promises')
     } else {
       alert('저장에 실패했습니다.')
     }
@@ -102,8 +102,8 @@ function ResultPageInner() {
     <main className="min-h-screen flex flex-col bg-[#FFF5F8]">
       <Header
         title={STEP_TITLES[step - 1]}
-        showBack={step > 1}
-        onBack={() => setStep((s) => s - 1)}
+        showBack
+        onBack={step > 1 ? () => setStep((s) => s - 1) : () => router.back()}
         rightSlot={
           <button
             className="text-xs text-[#FF6B9D] border border-[#FF6B9D] rounded-full px-2 py-1"
@@ -166,24 +166,6 @@ function ResultPageInner() {
         </div>
       )}
 
-      {/* 저장 완료 모달 */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-        <div className="flex flex-col items-center gap-4 text-center">
-          <span className="text-5xl">💝</span>
-          <h2 className="text-xl font-bold text-[#1A1A1A]">약속이 저장됐어요</h2>
-          <p className="text-sm text-[#666] leading-relaxed">
-            두 분의 소중한 약속이 기록됐어요.<br />
-            로그인하면 언제든지 다시 볼 수 있어요.
-          </p>
-          <Button onClick={() => router.push('/')}>처음으로 돌아가기</Button>
-          <button
-            className="text-sm text-[#999]"
-            onClick={() => setShowModal(false)}
-          >
-            닫기
-          </button>
-        </div>
-      </Modal>
     </main>
   )
 }

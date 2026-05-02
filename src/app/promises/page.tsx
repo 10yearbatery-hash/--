@@ -22,6 +22,18 @@ export default function PromisesPage() {
     const profileId = getProfileId()
     if (!profileId) { router.push('/login'); return }
 
+    // 비로그인으로 약속 저장 시도했던 데이터 자동 저장
+    const pending = sessionStorage.getItem('pendingPromises')
+    if (pending) {
+      sessionStorage.removeItem('pendingPromises')
+      const { roomId, promises: pendingItems } = JSON.parse(pending)
+      fetch('/api/promises', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-profile-id': profileId },
+        body: JSON.stringify({ roomId, promises: pendingItems }),
+      }).catch(() => {})
+    }
+
     fetch('/api/promises', {
       headers: { 'x-profile-id': profileId },
     })
