@@ -7,6 +7,8 @@ import {
   MARK_QUESTION_SATISFIED_TOOL,
 } from '@/lib/claude/chat'
 
+export const maxDuration = 60 // Vercel 함수 타임아웃 60초
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ sessionId: string }> }
@@ -129,11 +131,17 @@ export async function POST(
 
         claudeStream.on('error', (err) => {
           console.error('Claude stream error:', err)
-          controller.error(err)
+          controller.enqueue(
+            encoder.encode(`data: ${JSON.stringify({ type: 'error', message: String(err) })}\n\n`)
+          )
+          controller.close()
         })
       } catch (err) {
         console.error('Stream start error:', err)
-        controller.error(err)
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify({ type: 'error', message: String(err) })}\n\n`)
+        )
+        controller.close()
       }
     },
   })
