@@ -141,7 +141,7 @@ function ChatPageInner() {
   const isFinishStep = currentQuestion >= 5
 
   return (
-    <main className="h-screen flex flex-col bg-[#FFF5F8]">
+    <main className="h-dvh flex flex-col bg-[#FFF5F8] overflow-hidden">
       <Header
         title="본심 상담"
         showBack
