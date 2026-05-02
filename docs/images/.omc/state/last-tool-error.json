@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd /home/gdg/workspace/해커톤 && npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --no-import-alias --yes 2>&1\",\"timeout\":120000,\"description\":\"Next.js 프로젝트 초기화\"}",
+  "error": "Exit code 1\nnpm warn exec The following package was not found and will be installed: create-next-app@16.2.4\nCould not create a project called \"해커톤\" because of npm naming restrictions:\n    * name can only contain URL-friendly characters",
+  "timestamp": "2026-05-02T08:38:45.311Z",
+  "retry_count": 1
+}

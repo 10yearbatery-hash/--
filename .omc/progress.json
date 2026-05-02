@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-05-02",
+  "current_phase": "harness_setup_complete",
+  "current_task": null,
+  "completed": [
+    "docs/prd.md",
+    "docs/ui-ux-spec.md",
+    "docs/db-schema.md",
+    "docs/realtime-architecture.md",
+    "docs/api-design.md",
+    "docs/ai-agent-spec.md",
+    "docs/security-rls.md",
+    ".env.example",
+    "CLAUDE.md",
+    "AGENTS.md",
+    ".omc/feature-checklist.json"
+  ],
+  "blocked": null,
+  "notes": "하네스 세팅 완료. 다음 단계는 writing-plans → 구현 계획서 작성."
+}

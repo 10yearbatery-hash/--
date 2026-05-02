@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "total": 0,
+  "done_count": 0,
+  "features": {
+    "infra": {
+      "label": "프로젝트 인프라",
+      "items": [
+        { "id": "INFRA-01", "title": "Next.js 15 + TypeScript 프로젝트 초기화", "done": false },
+        { "id": "INFRA-02", "title": "Tailwind CSS v4 설정", "done": false },
+        { "id": "INFRA-03", "title": "Supabase 클라이언트 연결 설정", "done": false },
+        { "id": "INFRA-04", "title": "환경변수 로딩 및 검증", "done": false },
+        { "id": "INFRA-05", "title": "Pretendard 웹폰트 설정", "done": false },
+        { "id": "INFRA-06", "title": "Vercel 배포 연결 및 환경변수 설정", "done": false }
+      ]
+    },
+    "db": {
+      "label": "데이터베이스",
+      "items": [
+        { "id": "DB-01", "title": "rooms 테이블 마이그레이션", "done": false },
+        { "id": "DB-02", "title": "sessions 테이블 마이그레이션", "done": false },
+        { "id": "DB-03", "title": "messages 테이블 마이그레이션", "done": false },
+        { "id": "DB-04", "title": "results 테이블 마이그레이션", "done": false },
+        { "id": "DB-05", "title": "promises 테이블 마이그레이션", "done": false },
+        { "id": "DB-06", "title": "양측 완료 감지 DB 트리거 설정", "done": false }
+      ]
+    },
+    "auth": {
+      "label": "인증 및 보안",
+      "items": [
+        { "id": "AUTH-01", "title": "Supabase Auth Magic Link 로그인 구현", "done": false },
+        { "id": "AUTH-02", "title": "RLS 정책 적용 (rooms)", "done": false },
+        { "id": "AUTH-03", "title": "RLS 정책 적용 (sessions)", "done": false },
+        { "id": "AUTH-04", "title": "RLS 정책 적용 (messages)", "done": false },
+        { "id": "AUTH-05", "title": "RLS 정책 적용 (results)", "done": false },
+        { "id": "AUTH-06", "title": "RLS 정책 적용 (promises)", "done": false },
+        { "id": "AUTH-07", "title": "session_token localStorage 저장 및 헤더 전송", "done": false }
+      ]
+    },
+    "page_home": {
+      "label": "홈 페이지",
+      "items": [
+        { "id": "HOME-01", "title": "홈 페이지 레이아웃 (로고, 슬로건)", "done": false },
+        { "id": "HOME-02", "title": "'방 만들기' CTA 버튼 및 라우팅", "done": false },
+        { "id": "HOME-03", "title": "'코드 입력하기' 링크 및 입력 모달", "done": false },
+        { "id": "HOME-04", "title": "헤더 (햄버거, 로그인 버튼)", "done": false }
+      ]
+    },
+    "page_room_create": {
+      "label": "방 만들기 페이지",
+      "items": [
+        { "id": "ROOM-01", "title": "방 만들기 폼 UI (이름, 키워드 입력)", "done": false },
+        { "id": "ROOM-02", "title": "POST /api/rooms 구현 (방 생성, 코드 발급)", "done": false },
+        { "id": "ROOM-03", "title": "session_token 발급 및 localStorage 저장", "done": false },
+        { "id": "ROOM-04", "title": "연인에게 공유하기 페이지로 이동", "done": false },
+        { "id": "ROOM-05", "title": "방 코드/링크 복사 기능", "done": false }
+      ]
+    },
+    "page_room_join": {
+      "label": "채팅방 입장 페이지",
+      "items": [
+        { "id": "JOIN-01", "title": "코드 입력으로 방 조회 (GET /api/rooms/[code])", "done": false },
+        { "id": "JOIN-02", "title": "B 세션 생성 (POST /api/rooms/[id]/join)", "done": false },
+        { "id": "JOIN-03", "title": "갈등 키워드 요약 표시", "done": false },
+        { "id": "JOIN-04", "title": "채팅방 입장 버튼 및 라우팅", "done": false }
+      ]
+    },
+    "page_chat": {
+      "label": "채팅방 페이지",
+      "items": [
+        { "id": "CHAT-01", "title": "채팅 UI 레이아웃 (헤더, 말풍선, 입력창)", "done": false },
+        { "id": "CHAT-02", "title": "AI 말풍선 / 유저 말풍선 스타일 구분", "done": false },
+        { "id": "CHAT-03", "title": "메시지 전송 및 SSE 스트리밍 수신", "done": false },
+        { "id": "CHAT-04", "title": "타이핑 인디케이터 애니메이션", "done": false },
+        { "id": "CHAT-05", "title": "단계 태그 표시 (상처 확인/진심 발견 등)", "done": false },
+        { "id": "CHAT-06", "title": "메시지 히스토리 로딩 (재접속 복원)", "done": false }
+      ]
+    },
+    "ai_agent": {
+      "label": "AI 에이전트",
+      "items": [
+        { "id": "AI-01", "title": "Claude API 스트리밍 연동 (POST /api/chat/[sessionId]/message)", "done": false },
+        { "id": "AI-02", "title": "시스템 프롬프트 + 변수 주입 구현", "done": false },
+        { "id": "AI-03", "title": "mark_question_satisfied tool calling 처리", "done": false },
+        { "id": "AI-04", "title": "Q1~Q4 단계 진행 및 current_question 업데이트", "done": false },
+        { "id": "AI-05", "title": "마무리 단계 처리 (POST /api/sessions/[id]/finish)", "done": false },
+        { "id": "AI-06", "title": "결과 생성 Edge Function 구현", "done": false },
+        { "id": "AI-07", "title": "BOTH_DONE → GENERATING → RESULT_READY 상태 전이", "done": false }
+      ]
+    },
+    "realtime": {
+      "label": "실시간 기능",
+      "items": [
+        { "id": "RT-01", "title": "Supabase Realtime room status 구독", "done": false },
+        { "id": "RT-02", "title": "대기 상태 UI ('상대방이 아직 본심을 기록하고 있습니다')", "done": false },
+        { "id": "RT-03", "title": "결과 생성 중 UI ('결과를 생성하고 있습니다...')", "done": false },
+        { "id": "RT-04", "title": "결과 준비 완료 UI + [결과보러가기] 버튼", "done": false }
+      ]
+    },
+    "page_result": {
+      "label": "결과 페이지",
+      "items": [
+        { "id": "RESULT-01", "title": "결과 페이지 프로그레스 바 컴포넌트", "done": false },
+        { "id": "RESULT-02", "title": "Step 1: 상황 요약 UI", "done": false },
+        { "id": "RESULT-03", "title": "Step 2: 서로의 진심 탭 UI (A/B 이름 기반)", "done": false },
+        { "id": "RESULT-04", "title": "Step 3: AI 갈등 통역 UI", "done": false },
+        { "id": "RESULT-05", "title": "Step 4: 앞으로의 약속 체크박스 UI", "done": false },
+        { "id": "RESULT-06", "title": "직접 약속 추가 입력 필드", "done": false },
+        { "id": "RESULT-07", "title": "GET /api/rooms/[id]/result 구현", "done": false },
+        { "id": "RESULT-08", "title": "저장 완료 모달 ('약속이 저장됐어요')", "done": false }
+      ]
+    },
+    "page_promises": {
+      "label": "우리들의 약속 페이지",
+      "items": [
+        { "id": "PROMISE-01", "title": "약속 목록 UI (시간순)", "done": false },
+        { "id": "PROMISE-02", "title": "POST /api/promises 구현 (약속 저장)", "done": false },
+        { "id": "PROMISE-03", "title": "GET /api/promises 구현 (약속 목록 조회)", "done": false }
+      ]
+    },
+    "page_login": {
+      "label": "로그인 페이지",
+      "items": [
+        { "id": "LOGIN-01", "title": "로그인 페이지 UI", "done": false },
+        { "id": "LOGIN-02", "title": "Magic Link 이메일 발송 구현", "done": false },
+        { "id": "LOGIN-03", "title": "로그인 완료 후 session.user_id 업데이트", "done": false },
+        { "id": "LOGIN-04", "title": "로그인 완료 후 약속 저장 처리 연결", "done": false }
+      ]
+    }
+  }
+}
