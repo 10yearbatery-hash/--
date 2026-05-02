@@ -25,7 +25,7 @@ export default function RoomCreatePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.message)
       setSessionToken(data.sessionToken)
-      router.push(`/chat/${data.sessionId}?roomCode=${data.roomCode}&roomId=${data.roomId}`)
+      router.push(`/share/${data.roomCode}?sessionId=${data.sessionId}&roomId=${data.roomId}`)
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : '방 생성에 실패했습니다.')
     } finally {
