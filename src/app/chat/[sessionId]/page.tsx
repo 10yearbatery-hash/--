@@ -164,23 +164,21 @@ function ChatPageInner() {
 
       {/* 입력창 */}
       {!sessionDone && (
-        <div className="px-5 py-3 border-t border-[#F0D0DC] bg-[#FFF5F8] flex gap-2">
-          <input
-            className="flex-1 bg-white border border-[#F0D0DC] rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[#FF6B9D]"
+        <div className="px-5 py-3 border-t border-[#F0D0DC] bg-[#FFF5F8] flex gap-2 items-end">
+          <textarea
+            className="flex-1 bg-white border border-[#F0D0DC] rounded-2xl px-4 py-2 text-sm focus:outline-none focus:border-[#FF6B9D] resize-none min-h-[40px] max-h-[120px]"
             placeholder="솔직하게 털어놔 보세요..."
+            rows={1}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                if (isFinishStep) finishSession()
-                else sendMessage()
-              }
+            onChange={(e) => {
+              setInput(e.target.value)
+              e.target.style.height = 'auto'
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px'
             }}
             disabled={isTyping}
           />
           <button
-            className="w-10 h-10 rounded-full bg-[#FF6B9D] text-white flex items-center justify-center flex-shrink-0 disabled:opacity-50"
+            className="w-10 h-10 rounded-full bg-[#FF6B9D] text-white flex items-center justify-center flex-shrink-0 disabled:opacity-50 mb-0.5"
             onClick={isFinishStep ? finishSession : sendMessage}
             disabled={isTyping || (!input.trim() && !isFinishStep)}
           >
