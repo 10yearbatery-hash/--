@@ -1,65 +1,86 @@
-import Image from "next/image";
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Button from '@/components/ui/Button'
+import Header from '@/components/ui/Header'
 
-export default function Home() {
+export default function HomePage() {
+  const router = useRouter()
+  const [showCodeInput, setShowCodeInput] = useState(false)
+  const [code, setCode] = useState('')
+
+  function handleCodeJoin() {
+    if (code.length !== 6) return
+    router.push(`/join/${code.toUpperCase()}`)
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen flex flex-col">
+      <Header
+        rightSlot={
+          <button
+            className="text-sm text-[#FF6B9D] font-medium border border-[#FF6B9D] rounded-full px-3 py-1"
+            onClick={() => router.push('/login')}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            로그인
+          </button>
+        }
+      />
+
+      {/* 메인 콘텐츠 */}
+      <div className="flex-1 flex flex-col items-center justify-center px-5 gap-8">
+        {/* 로고 */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="relative w-20 h-12">
+            <div className="absolute left-0 w-12 h-12 rounded-full bg-[#FF6B9D] opacity-90" />
+            <div className="absolute right-0 w-12 h-12 rounded-full bg-[#FFD6E7]" />
+          </div>
+          <h1 className="text-4xl font-bold text-[#1A1A1A] tracking-tight">본심</h1>
+          <p className="text-sm text-[#FF6B9D] font-medium tracking-widest">Bon-Sim</p>
+          <div className="text-center mt-2">
+            <p className="text-[#666] text-sm leading-relaxed">
+              비난 뒤에 숨겨진<br />진심을 함께 찾아요
+            </p>
+            <p className="text-xs text-[#FF6B9D] mt-2 font-medium">슬픔이 아닌, 관계의 회복</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 하단 CTA */}
+      <div className="px-5 pb-12 flex flex-col gap-3">
+        <Button onClick={() => router.push('/room/create')}>
+          ❤ 방 만들기
+        </Button>
+
+        {!showCodeInput ? (
+          <button
+            className="text-center text-sm text-[#FF6B9D] py-2"
+            onClick={() => setShowCodeInput(true)}
+          >
+            → 코드 입력하기
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <input
+              className="flex-1 border border-[#F0D0DC] rounded-full px-4 py-2 text-center text-lg font-mono tracking-widest uppercase bg-white focus:outline-none focus:border-[#FF6B9D]"
+              placeholder="6자리 코드"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleCodeJoin() }}
+              autoFocus
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            <Button
+              fullWidth={false}
+              className="px-5"
+              onClick={handleCodeJoin}
+              disabled={code.length !== 6}
+            >
+              입장
+            </Button>
+          </div>
+        )}
+      </div>
+    </main>
+  )
 }
