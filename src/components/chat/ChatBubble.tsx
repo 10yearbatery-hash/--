@@ -1,25 +1,25 @@
-interface Props {
+interface ChatBubbleProps {
   role: 'ai' | 'user'
   content: string
 }
 
-export default function ChatBubble({ role, content }: Props) {
+export default function ChatBubble({ role, content }: ChatBubbleProps) {
   if (role === 'ai') {
     return (
-      <div className="flex gap-3 items-end">
-        <div className="w-9 h-9 rounded-full bg-[#F9C8D4] flex items-center justify-center flex-shrink-0">
-          <span className="text-bd text-xs">·ᴗ·</span>
+      <div className="flex gap-2 items-start">
+        <div className="w-8 h-8 rounded-full bg-[#FF6B9D] flex items-center justify-center text-white text-xs flex-shrink-0">
+          💗
         </div>
-        <div className="max-w-[75%] bg-bp-muted rounded-2xl rounded-bl-sm px-4 py-3">
-          <p className="text-[14px] text-bd leading-relaxed whitespace-pre-wrap">{content}</p>
+        <div className="max-w-[75%] bg-[#FFD6E7] rounded-2xl rounded-tl-none px-4 py-3 text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-line">
+          {content}
         </div>
       </div>
     )
   }
   return (
     <div className="flex justify-end">
-      <div className="max-w-[75%] bg-bp rounded-2xl rounded-br-sm px-4 py-3">
-        <p className="text-[14px] text-white leading-relaxed whitespace-pre-wrap">{content}</p>
+      <div className="max-w-[75%] bg-white border border-[#F0D0DC] rounded-2xl rounded-tr-none px-4 py-3 text-sm text-[#1A1A1A] leading-relaxed whitespace-pre-line">
+        {content}
       </div>
     </div>
   )

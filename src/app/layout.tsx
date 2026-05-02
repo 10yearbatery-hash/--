@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: '본심',
-  description: '승패가 아닌, 관계의 회복',
+  description: '비난 뒤에 숨겨진 진심을 함께 찾아요',
 }
 
 export const viewport: Viewport = {
@@ -19,6 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
+      <head>
+        <link
+          rel="stylesheet"
+          as="style"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+        />
+      </head>
       <body>{children}</body>
     </html>
   )

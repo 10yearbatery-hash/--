@@ -1,7 +1,6 @@
 'use client'
-// 결과 2단계: 서로의 진심 컴포넌트 - 탭으로 A/B 전환
-
 import { useState } from 'react'
+import Card from '@/components/ui/Card'
 
 interface Truth {
   hurt: string
@@ -23,9 +22,6 @@ export default function StepTruths({ creatorName, partnerName, truthA, truthB }:
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="font-jua text-[18px] text-bd">서로는 지금 이렇게 생각하고 있어요.</p>
-
-      {/* 탭 버튼 */}
       <div className="flex gap-2">
         {(['A', 'B'] as const).map((t) => (
           <button
@@ -33,41 +29,26 @@ export default function StepTruths({ creatorName, partnerName, truthA, truthB }:
             onClick={() => setTab(t)}
             className={`flex-1 py-2 rounded-full text-sm font-semibold transition-all ${
               tab === t
-                ? 'bg-bp text-white shadow-sm'
-                : 'bg-bp-card text-bm'
+                ? 'bg-[#FF6B9D] text-white shadow-[0_4px_16px_rgba(255,107,157,0.3)]'
+                : 'bg-[#FFD6E7] text-[#FF6B9D]'
             }`}
           >
             {t === 'A' ? creatorName : partnerName}의 입장
           </button>
         ))}
       </div>
-
-      {/* 가장 속상했던 부분 */}
-      <div className="bg-bp-card rounded-2xl p-4 border border-bborder">
-        <div className="flex gap-2 items-center mb-2">
-          <span className="text-base">💗</span>
-          <p className="text-xs text-bp font-semibold">가장 속상했던 부분</p>
-        </div>
-        <p className="text-[13px] text-bd leading-relaxed">{truth.hurt}</p>
-      </div>
-
-      {/* 정말로 바랐던 것 */}
-      <div className="bg-bp-card rounded-2xl p-4 border border-bborder">
-        <div className="flex gap-2 items-center mb-2">
-          <span className="text-base">💗</span>
-          <p className="text-xs text-bp font-semibold">{name}가 정말로 바랐던 것</p>
-        </div>
-        <p className="text-[13px] text-bd leading-relaxed">{truth.need}</p>
-      </div>
-
-      {/* 상대에 대한 이해 */}
-      <div className="bg-bp-card rounded-2xl p-4 border border-bborder">
-        <div className="flex gap-2 items-center mb-2">
-          <span className="text-base">💗</span>
-          <p className="text-xs text-bp font-semibold">상대에 대한 이해</p>
-        </div>
-        <p className="text-[13px] text-bd leading-relaxed">{truth.understanding}</p>
-      </div>
+      <Card>
+        <p className="text-xs text-[#FF6B9D] font-semibold mb-2">❤️ 가장 속상했던 부분</p>
+        <p className="text-sm text-[#1A1A1A] leading-relaxed">{truth.hurt}</p>
+      </Card>
+      <Card variant="pink">
+        <p className="text-xs text-[#FF6B9D] font-semibold mb-2">💛 {name}가 정말로 바랐던 것</p>
+        <p className="text-sm text-[#1A1A1A] leading-relaxed">{truth.need}</p>
+      </Card>
+      <Card className="bg-gray-50 border border-gray-200">
+        <p className="text-xs text-[#888] font-semibold mb-2">🤍 상대에 대한 이해</p>
+        <p className="text-sm text-[#666] leading-relaxed">{truth.understanding}</p>
+      </Card>
     </div>
   )
 }
