@@ -1,7 +1,0 @@
-{
-  "tool_name": "WebFetch",
-  "tool_input_preview": "{\"url\":\"https://openai.com/ko-KR/index/harness-engineering/\",\"prompt\":\"하네스 엔지니어링의 핵심 개념, 구성요소, 베스트 프랙티스를 상세히 요약해주세요.\"}",
-  "error": "Request failed with status code 403",
-  "timestamp": "2026-05-02T07:20:30.733Z",
-  "retry_count": 1
-}

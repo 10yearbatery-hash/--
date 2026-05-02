@@ -7,7 +7,7 @@ import {
   MARK_QUESTION_SATISFIED_TOOL,
 } from '@/lib/claude/chat'
 
-export const maxDuration = 60 // Vercel 함수 타임아웃 60초
+export const maxDuration = 60
 
 export async function POST(
   req: NextRequest,
@@ -23,7 +23,6 @@ export async function POST(
 
   const supabase = createServiceClient()
 
-  // 세션 조회 및 검증
   const { data: session } = await supabase
     .from('sessions')
     .select('id, room_id, role, participant_name, status, current_question, session_token')
@@ -35,10 +34,9 @@ export async function POST(
     return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 })
   }
   if (session.status === 'DONE') {
-    return NextResponse.json({ error: 'FORBIDDEN', message: '이미 완료된 세션입니다.' }, { status: 403 })
+    return NextResponse.json({ error: 'FORBIDDEN' }, { status: 403 })
   }
 
-  // 방 정보 조회
   const { data: room } = await supabase
     .from('rooms')
     .select('keyword, creator_name, partner_name')
@@ -66,91 +64,82 @@ export async function POST(
   )
   const history = await buildMessageHistory(sessionId)
 
-  const encoder = new TextEncoder()
-  let fullText = ''
-  let toolUseData: { question: number; summary: string } | null = null
-
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const claudeStream = anthropic.messages.stream({
-          model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 1024,
-          system: systemPrompt,
-          messages: history,
-          tools: [MARK_QUESTION_SATISFIED_TOOL],
-        })
-
-        claudeStream.on('text', (text) => {
-          fullText += text
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'delta', text })}\n\n`)
-          )
-        })
-
-        claudeStream.on('message', async (msg) => {
-          // tool use 처리
-          for (const block of msg.content) {
-            if (block.type === 'tool_use' && block.name === 'mark_question_satisfied') {
-              toolUseData = block.input as { question: number; summary: string }
-            }
-          }
-
-          // AI 메시지 저장
-          if (fullText) {
-            await supabase.from('messages').insert({
-              session_id: sessionId,
-              role: 'ai',
-              content: fullText,
-              question_stage: session.current_question,
-            })
-          }
-
-          // 질문 충족 처리
-          if (toolUseData) {
-            const qKey = `q${toolUseData.question}_summary`
-            const nextQuestion = Math.min(toolUseData.question + 1, 5)
-            await supabase
-              .from('sessions')
-              .update({
-                [qKey]: toolUseData.summary,
-                current_question: nextQuestion,
-              })
-              .eq('id', sessionId)
-
-            controller.enqueue(
-              encoder.encode(
-                `data: ${JSON.stringify({ type: 'question_advance', question: nextQuestion })}\n\n`
-              )
-            )
-          }
-
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`))
-          controller.close()
-        })
-
-        claudeStream.on('error', (err) => {
-          console.error('Claude stream error:', err)
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: 'error', message: String(err) })}\n\n`)
-          )
-          controller.close()
-        })
-      } catch (err) {
-        console.error('Stream start error:', err)
-        controller.enqueue(
-          encoder.encode(`data: ${JSON.stringify({ type: 'error', message: String(err) })}\n\n`)
-        )
-        controller.close()
-      }
-    },
+  // 스트리밍 대신 일반 API 호출 (안정성 향상)
+  const msg = await anthropic.messages.create({
+    model: 'claude-sonnet-4-5-20250929',
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages: history,
+    tools: [MARK_QUESTION_SATISFIED_TOOL],
   })
 
-  return new Response(stream, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
-    },
+  // 텍스트 추출
+  let aiText = ''
+  let toolUseData: { question: number; summary: string } | null = null
+
+  for (const block of msg.content) {
+    if (block.type === 'text') {
+      aiText += block.text
+    }
+    if (block.type === 'tool_use' && block.name === 'mark_question_satisfied') {
+      toolUseData = block.input as { question: number; summary: string }
+    }
+  }
+
+  // AI 메시지 저장
+  if (aiText) {
+    await supabase.from('messages').insert({
+      session_id: sessionId,
+      role: 'ai',
+      content: aiText,
+      question_stage: session.current_question,
+    })
+  }
+
+  // 질문 충족 처리 및 다음 질문 생성
+  let nextQuestion: number | null = null
+  let nextAiText = ''
+
+  if (toolUseData) {
+    const qKey = `q${toolUseData.question}_summary`
+    nextQuestion = Math.min(toolUseData.question + 1, 5)
+
+    await supabase
+      .from('sessions')
+      .update({ [qKey]: toolUseData.summary, current_question: nextQuestion })
+      .eq('id', sessionId)
+
+    // 다음 질문이 있으면 즉시 AI에게 다음 질문 생성 요청
+    if (nextQuestion <= 4) {
+      const updatedHistory = await buildMessageHistory(sessionId)
+      const nextSystemPrompt = buildSystemPrompt(
+        room.keyword,
+        session.participant_name,
+        partnerName,
+        nextQuestion
+      )
+      const nextMsg = await anthropic.messages.create({
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 512,
+        system: nextSystemPrompt,
+        messages: updatedHistory,
+      })
+      for (const block of nextMsg.content) {
+        if (block.type === 'text') nextAiText += block.text
+      }
+      if (nextAiText) {
+        await supabase.from('messages').insert({
+          session_id: sessionId,
+          role: 'ai',
+          content: nextAiText,
+          question_stage: nextQuestion,
+        })
+      }
+    }
+  }
+
+  return NextResponse.json({
+    text: aiText || nextAiText,
+    questionAdvance: nextQuestion,
   })
 }

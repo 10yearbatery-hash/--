@@ -73,59 +73,38 @@ function ChatPageInner() {
     if (!input.trim() || isTyping) return
     const userMsg = input.trim()
     setInput('')
-    const userMsgId = `user-${Date.now()}`
-    setMessages((prev) => [...prev, { id: userMsgId, role: 'user', content: userMsg }])
+    setMessages((prev) => [...prev, { id: `user-${Date.now()}`, role: 'user', content: userMsg }])
     setIsTyping(true)
 
-    const sessionToken = getSessionToken()
-    const res = await fetch(`/api/chat/${sessionId}/message`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-session-token': sessionToken || '',
-      },
-      body: JSON.stringify({ content: userMsg }),
-    })
+    try {
+      const sessionToken = getSessionToken()
+      const res = await fetch(`/api/chat/${sessionId}/message`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-session-token': sessionToken || '',
+        },
+        body: JSON.stringify({ content: userMsg }),
+      })
 
-    if (!res.ok || !res.body) {
-      setIsTyping(false)
-      return
-    }
-
-    const aiMsgId = `ai-${Date.now()}`
-    let aiText = ''
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      const lines = decoder.decode(value).split('\n').filter((l) => l.startsWith('data: '))
-      for (const line of lines) {
-        try {
-          const event = JSON.parse(line.slice(6))
-          if (event.type === 'delta') {
-            aiText += event.text
-            setMessages((prev) => {
-              const existing = prev.find((m) => m.id === aiMsgId)
-              if (existing) {
-                return prev.map((m) => m.id === aiMsgId ? { ...m, content: aiText } : m)
-              }
-              return [...prev, { id: aiMsgId, role: 'ai', content: aiText }]
-            })
-          }
-          if (event.type === 'question_advance') {
-            setCurrentQuestion(event.question)
-          }
-          if (event.type === 'done') {
-            setIsTyping(false)
-          }
-        } catch {
-          // JSON 파싱 오류 무시
-        }
+      if (!res.ok) {
+        setIsTyping(false)
+        return
       }
+
+      const data = await res.json()
+
+      if (data.text) {
+        setMessages((prev) => [...prev, { id: `ai-${Date.now()}`, role: 'ai', content: data.text }])
+      }
+      if (data.questionAdvance) {
+        setCurrentQuestion(data.questionAdvance)
+      }
+    } catch (err) {
+      console.error('메시지 전송 오류:', err)
+    } finally {
+      setIsTyping(false)
     }
-    setIsTyping(false)
   }
 
   async function finishSession() {
