@@ -42,6 +42,28 @@ function ChatPageInner() {
   const [sessionDone, setSessionDone] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  // DB에서 채팅 기록 복원
+  useEffect(() => {
+    const sessionToken = getSessionToken()
+    if (!sessionToken || !sessionId) return
+    fetch(`/api/chat/${sessionId}/messages`, {
+      headers: { 'x-session-token': sessionToken },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.messages?.length > 0) {
+          setMessages(data.messages.map((m: { id: string; role: 'ai' | 'user'; content: string }) => ({
+            id: m.id,
+            role: m.role,
+            content: m.content,
+          })))
+          setCurrentQuestion(data.currentQuestion || 1)
+          if (data.sessionDone) setSessionDone(true)
+        }
+      })
+      .catch(() => {})
+  }, [sessionId])
+
   // Realtime room status 구독
   useEffect(() => {
     if (!roomId) return

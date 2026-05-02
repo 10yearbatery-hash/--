@@ -9,7 +9,7 @@ import StepSituation from '@/components/result/StepSituation'
 import StepTruths from '@/components/result/StepTruths'
 import StepTranslation from '@/components/result/StepTranslation'
 import StepPromises from '@/components/result/StepPromises'
-import { getSessionToken } from '@/lib/utils/session-token'
+import { getSessionToken, getProfileId } from '@/lib/utils/session-token'
 import type { ResultData } from '@/types'
 
 const STEP_TITLES = ['상황 요약', '서로의 진심', 'AI 갈등 통역', '앞으로의 약속']
@@ -50,8 +50,12 @@ function ResultPageInner() {
   }, [roomId])
 
   async function handleSave(selected: string[], custom: string[]) {
+    const profileId = getProfileId()
+    if (!profileId) {
+      router.push(`/login?redirect=${encodeURIComponent(`/result/${roomId}`)}`)
+      return
+    }
     setSaveLoading(true)
-    const sessionToken = getSessionToken()
     const promises = [
       ...selected.map((c) => ({ content: c, isCustom: false })),
       ...custom.map((c) => ({ content: c, isCustom: true })),
@@ -61,17 +65,12 @@ function ResultPageInner() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-session-token': sessionToken || '',
+        'x-profile-id': profileId,
       },
       body: JSON.stringify({ roomId, promises }),
     })
 
     setSaveLoading(false)
-
-    if (res.status === 401) {
-      router.push(`/login?redirect=${encodeURIComponent(`/result/${roomId}`)}`)
-      return
-    }
 
     if (res.ok) {
       setShowModal(true)
@@ -104,6 +103,7 @@ function ResultPageInner() {
       <Header
         title={STEP_TITLES[step - 1]}
         showBack={step > 1}
+        onBack={() => setStep((s) => s - 1)}
         rightSlot={
           <button
             className="text-xs text-[#FF6B9D] border border-[#FF6B9D] rounded-full px-2 py-1"

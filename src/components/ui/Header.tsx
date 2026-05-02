@@ -4,17 +4,18 @@ import { useRouter } from 'next/navigation'
 interface HeaderProps {
   title?: string
   showBack?: boolean
+  onBack?: () => void
   rightSlot?: React.ReactNode
   roomCode?: string
 }
 
-export default function Header({ title, showBack = false, rightSlot, roomCode }: HeaderProps) {
+export default function Header({ title, showBack = false, onBack, rightSlot, roomCode }: HeaderProps) {
   const router = useRouter()
   return (
     <header className="flex items-center justify-between px-5 py-3 bg-[#FFF5F8] sticky top-0 z-10">
       <div className="w-10">
         {showBack ? (
-          <button onClick={() => router.back()} className="text-[#FF6B9D] text-xl">←</button>
+          <button onClick={onBack ?? (() => router.back())} className="text-[#FF6B9D] text-xl">←</button>
         ) : (
           <span className="text-xl text-[#666]">☰</span>
         )}
