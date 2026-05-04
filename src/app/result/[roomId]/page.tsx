@@ -11,12 +11,12 @@ import StepPromises from '@/components/result/StepPromises'
 import { getSessionToken, getProfileId } from '@/lib/utils/session-token'
 import type { ResultData } from '@/types'
 
-const STEP_TITLES = ['상황 요약', '서로의 진심', 'AI 갈등 통역', '앞으로의 약속']
+const STEP_TITLES = ['상황 요약', '서로의 진심', 'VonSim 통역', '앞으로의 약속']
 const STEP_SUBTITLES = [
   '무슨 일이 있었나요?',
   '서로의 속마음을 확인해요',
   '본심으로 번역해드릴게요',
-  '함께 지켜나갈 약속들',
+  '함께 지켜나가기로 약속해요',
 ]
 
 interface ResultPageData extends ResultData {
@@ -64,10 +64,7 @@ function ResultPageInner() {
     setSaveLoading(true)
     const res = await fetch('/api/promises', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-profile-id': profileId,
-      },
+      headers: { 'Content-Type': 'application/json', 'x-profile-id': profileId },
       body: JSON.stringify({ roomId, promises }),
     })
     setSaveLoading(false)
@@ -82,8 +79,8 @@ function ResultPageInner() {
   if (error) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center px-5 gap-4">
-        <p className="text-[#666] text-center">{error}</p>
-        <button className="text-[#FF6B9D] text-sm" onClick={() => router.push('/')}>홈으로</button>
+        <p className="text-[#a0a0b8] text-center">{error}</p>
+        <button className="text-[#ff6b9d] font-jua text-sm" onClick={() => router.push('/')}>홈으로</button>
       </main>
     )
   }
@@ -91,7 +88,7 @@ function ResultPageInner() {
   if (loading) {
     return (
       <main className="min-h-screen flex flex-col items-center justify-center">
-        <p className="text-[#FF6B9D] text-sm">결과를 불러오는 중...</p>
+        <p className="font-jua text-[#ff6b9d] text-sm">결과를 불러오는 중...</p>
       </main>
     )
   }
@@ -99,14 +96,15 @@ function ResultPageInner() {
   if (!result) return null
 
   return (
-    <main className="min-h-screen flex flex-col bg-[#FFF5F8]">
+    <main className="min-h-dvh flex flex-col bg-white">
       <Header
         title={STEP_TITLES[step - 1]}
+        subtitle={STEP_SUBTITLES[step - 1]}
         showBack
         onBack={step > 1 ? () => setStep((s) => s - 1) : () => router.back()}
         rightSlot={
           <button
-            className="text-xs text-[#FF6B9D] border border-[#FF6B9D] rounded-full px-2 py-1"
+            className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#1a1a2e]"
             onClick={() => router.push('/login')}
           >
             로그인
@@ -114,11 +112,7 @@ function ResultPageInner() {
         }
       />
 
-      {/* 프로그레스 바 */}
-      <ProgressSteps current={step} />
-
-      {/* 서브타이틀 */}
-      <p className="text-center text-xs text-[#666] -mt-2 mb-2">{STEP_SUBTITLES[step - 1]}</p>
+      <ProgressSteps current={step} showActiveLabel />
 
       {/* 콘텐츠 */}
       <div className="flex-1 px-5 py-4 overflow-y-auto">
@@ -155,17 +149,23 @@ function ResultPageInner() {
             promises={result.recommended_promises}
             onSave={handleSave}
             loading={saveLoading}
+            creatorName={result.creatorName}
+            partnerName={result.partnerName}
           />
         )}
       </div>
 
       {/* 다음 버튼 */}
       {step < 4 && (
-        <div className="px-5 pb-10">
-          <Button onClick={() => setStep((s) => s + 1)}>다음 &gt;</Button>
+        <div className="px-5 pb-10 pt-2">
+          <Button onClick={() => setStep((s) => s + 1)}>
+            <span>다음</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 3l5 5-5 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Button>
         </div>
       )}
-
     </main>
   )
 }
@@ -174,7 +174,7 @@ export default function ResultPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[#FF6B9D] text-sm">로딩 중...</p>
+        <p className="font-jua text-[#ff6b9d] text-sm">로딩 중...</p>
       </div>
     }>
       <ResultPageInner />

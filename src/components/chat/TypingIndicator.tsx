@@ -1,16 +1,24 @@
-export default function TypingIndicator() {
+interface TypingIndicatorProps {
+  avatarSrc?: string
+}
+
+export default function TypingIndicator({ avatarSrc }: TypingIndicatorProps) {
   return (
     <div className="flex gap-2 items-start">
-      <div className="w-8 h-8 rounded-full bg-[#FF6B9D] flex items-center justify-center text-white text-xs flex-shrink-0">
-        💗
+      <div className="w-[41px] h-[41px] rounded-full flex-shrink-0 overflow-hidden">
+        {avatarSrc ? (
+          <img src={avatarSrc} alt="AI 캐릭터" className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full bg-[#FF6B9D] flex items-center justify-center text-white text-xs">💗</div>
+        )}
       </div>
-      <div className="bg-[#FFD6E7] rounded-2xl rounded-tl-none px-4 py-3">
-        <div className="flex gap-1 items-center h-4">
+      <div className="bg-[#fff5f7] rounded-[15px] px-5 py-[15px]">
+        <div className="flex gap-1.5 items-center h-5">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-2 h-2 rounded-full bg-[#FF6B9D] animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
+              className="w-2 h-2 rounded-full bg-[#a0a0b8]"
+              style={{ animation: `bounce 1.4s ease-in-out ${i * 0.2}s infinite` }}
             />
           ))}
         </div>

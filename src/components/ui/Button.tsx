@@ -10,10 +10,10 @@ export default function Button({
   className = '',
   ...props
 }: ButtonProps) {
-  const base = 'h-[52px] rounded-full font-semibold text-base transition-opacity disabled:opacity-50'
+  const base = 'h-14 rounded-[18px] font-semibold text-[25px] transition-opacity disabled:opacity-50 flex items-center justify-center gap-3'
   const variants = {
-    primary: 'bg-[#FF6B9D] text-white shadow-[0_4px_16px_rgba(255,107,157,0.3)]',
-    ghost: 'bg-transparent text-[#FF6B9D] underline',
+    primary: 'bg-gradient-to-r from-[#FF6B9D] to-[#FF8FB3] text-white shadow-[0_4px_16px_rgba(255,107,157,0.3)] font-jua',
+    ghost: 'bg-transparent text-[#FF6B9D] underline font-jua',
   }
   return (
     <button

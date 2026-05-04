@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
-import Header from '@/components/ui/Header'
 
 export default function HomePage() {
   const router = useRouter()
@@ -15,54 +14,82 @@ export default function HomePage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col">
-      <Header
-        rightSlot={
-          <button
-            className="text-sm text-[#FF6B9D] font-medium border border-[#FF6B9D] rounded-full px-3 py-1"
-            onClick={() => router.push('/login')}
-          >
-            로그인
-          </button>
-        }
-      />
+    <main className="min-h-screen bg-warm-white flex flex-col relative overflow-hidden">
+      {/* 헤더 */}
+      <header className="flex items-center justify-between px-6 pt-12 pb-4 relative z-10">
+        <button className="flex flex-col gap-[6px]" aria-label="메뉴">
+          <span className="block w-[22px] h-[2.5px] rounded-full bg-text-muted" />
+          <span className="block w-[22px] h-[2.5px] rounded-full bg-text-muted" />
+          <span className="block w-[22px] h-[2.5px] rounded-full bg-text-muted" />
+        </button>
+        <button
+          className="border border-border bg-white rounded-full px-4 py-1.5 text-[15px] font-jua text-text-dark"
+          onClick={() => router.push('/login')}
+        >
+          로그인
+        </button>
+      </header>
+
+      {/* 떠다니는 하트 장식 */}
+      <div className="absolute left-12 top-[214px] opacity-50 animate-float-slower pointer-events-none">
+        <span className="text-[#FFB3C1] text-[16px]">♥</span>
+      </div>
+      <div className="absolute left-[68px] top-[180px] opacity-50 animate-float pointer-events-none">
+        <span className="text-primary text-[10px]">♥</span>
+      </div>
+      <div className="absolute right-[90px] top-[197px] opacity-50 animate-float-slow pointer-events-none">
+        <span className="text-[#FFB3C1] text-[13px]">♥</span>
+      </div>
+      <div className="absolute right-[34px] top-[169px] opacity-50 animate-float pointer-events-none">
+        <span className="text-primary text-[9px]">·</span>
+      </div>
+      <div className="absolute right-[12px] top-[234px] opacity-50 animate-float-slower pointer-events-none">
+        <span className="text-[#FFB3C1] text-[14px]">♥</span>
+      </div>
 
       {/* 메인 콘텐츠 */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 gap-8">
-        {/* 로고 */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="relative w-20 h-12">
-            <div className="absolute left-0 w-12 h-12 rounded-full bg-[#FF6B9D] opacity-90" />
-            <div className="absolute right-0 w-12 h-12 rounded-full bg-[#FFD6E7]" />
-          </div>
-          <h1 className="text-4xl font-bold text-[#1A1A1A] tracking-tight">본심</h1>
-          <p className="text-sm text-[#FF6B9D] font-medium tracking-widest">Bon-Sim</p>
-          <div className="text-center mt-2">
-            <p className="text-[#666] text-sm leading-relaxed">
-              비난 뒤에 숨겨진<br />진심을 함께 찾아요
-            </p>
-            <p className="text-xs text-[#FF6B9D] mt-2 font-medium">슬픔이 아닌, 관계의 회복</p>
-          </div>
+      <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8">
+        {/* 캐릭터 이미지 */}
+        <img
+          src="/characters.png"
+          alt="본심 Von & Sim 캐릭터"
+          className="w-[163px] h-[186px] object-contain"
+        />
+
+        {/* 태그라인 (blur pill) */}
+        <div className="relative mt-4 flex justify-center">
+          <div className="absolute inset-0 bg-white rounded-full blur-[7px] scale-110" />
+          <p className="relative text-[16px] font-jua text-text-muted text-center px-6 py-1">
+            승패가 아닌, 관계의 회복
+          </p>
         </div>
       </div>
 
       {/* 하단 CTA */}
-      <div className="px-5 pb-12 flex flex-col gap-3">
+      <div className="px-5 pb-10 space-y-4 relative z-10">
         <Button onClick={() => router.push('/room/create')}>
-          ❤ 방 만들기
+          <span className="w-9 h-9 rounded-full bg-white/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <line x1="9" y1="2" x2="9" y2="16" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+              <line x1="2" y1="9" x2="16" y2="9" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+            </svg>
+          </span>
+          방 만들기
         </Button>
 
         {!showCodeInput ? (
-          <button
-            className="text-center text-sm text-[#FF6B9D] py-2"
-            onClick={() => setShowCodeInput(true)}
-          >
-            → 코드 입력하기
-          </button>
+          <div className="flex justify-center">
+            <button
+              className="text-[16px] font-jua text-text-muted underline underline-offset-2"
+              onClick={() => setShowCodeInput(true)}
+            >
+              코드 입력하기
+            </button>
+          </div>
         ) : (
           <div className="flex gap-2">
             <input
-              className="flex-1 border border-[#F0D0DC] rounded-full px-4 py-2 text-center text-lg font-mono tracking-widest uppercase bg-white focus:outline-none focus:border-[#FF6B9D]"
+              className="flex-1 border border-border rounded-full px-4 py-2 text-center text-lg font-mono tracking-widest uppercase bg-white focus:outline-none focus:border-primary"
               placeholder="6자리 코드"
               maxLength={6}
               value={code}
@@ -70,14 +97,13 @@ export default function HomePage() {
               onKeyDown={(e) => { if (e.key === 'Enter') handleCodeJoin() }}
               autoFocus
             />
-            <Button
-              fullWidth={false}
-              className="px-5"
+            <button
+              className="h-14 px-5 rounded-[18px] bg-gradient-to-r from-[#FF6B9D] to-[#FF8FB3] text-white font-jua text-lg disabled:opacity-50"
               onClick={handleCodeJoin}
               disabled={code.length !== 6}
             >
               입장
-            </Button>
+            </button>
           </div>
         )}
       </div>
