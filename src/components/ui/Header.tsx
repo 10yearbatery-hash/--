@@ -32,7 +32,7 @@ export default function Header({ title, subtitle, showBack = false, onBack, righ
           {roomCode && <span className="text-xs text-[#a0a0b8] font-jua">#{roomCode}</span>}
           {subtitle && <span className="text-[13px] font-jua text-[#a0a0b8]">{subtitle}</span>}
         </div>
-        <div className="flex justify-end w-10">
+        <div className="flex justify-end min-w-[40px]">
           {rightSlot}
         </div>
       </header>
