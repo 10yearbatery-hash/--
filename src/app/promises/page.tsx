@@ -49,7 +49,7 @@ export default function PromisesPage() {
 
   return (
     <main className="min-h-screen flex flex-col">
-      <Header title="우리들의 약속" showBack />
+      <Header title="우리들의 약속" showBack onBack={() => router.push('/')} />
       <div className="flex-1 px-5 py-6 flex flex-col gap-3">
         {profileName && (
           <p className="text-sm text-[#FF6B9D] font-medium">{profileName}님의 약속 목록</p>
