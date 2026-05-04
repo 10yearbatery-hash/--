@@ -1,9 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Header from '@/components/ui/Header'
-import { setSessionToken } from '@/lib/utils/session-token'
+import { setSessionToken, getProfileId, clearProfile } from '@/lib/utils/session-token'
 
 interface FieldProps {
   label: string
@@ -41,6 +41,11 @@ export default function RoomCreatePage() {
   const [partnerName, setPartnerName] = useState('')
   const [keyword, setKeyword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setIsLoggedIn(!!getProfileId())
+  }, [])
 
   async function handleSubmit() {
     if (!myName || !partnerName || !keyword) return
@@ -69,12 +74,21 @@ export default function RoomCreatePage() {
         showBack
         progress={0.25}
         rightSlot={
-          <button
-            className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#1a1a2e]"
-            onClick={() => router.push('/login')}
-          >
-            로그인
-          </button>
+          isLoggedIn ? (
+            <button
+              className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#a0a0b8]"
+              onClick={() => { clearProfile(); setIsLoggedIn(false) }}
+            >
+              로그아웃
+            </button>
+          ) : (
+            <button
+              className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#1a1a2e]"
+              onClick={() => router.push('/login')}
+            >
+              로그인
+            </button>
+          )
         }
       />
 

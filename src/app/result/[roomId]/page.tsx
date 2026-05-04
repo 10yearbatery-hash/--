@@ -8,7 +8,7 @@ import StepSituation from '@/components/result/StepSituation'
 import StepTruths from '@/components/result/StepTruths'
 import StepTranslation from '@/components/result/StepTranslation'
 import StepPromises from '@/components/result/StepPromises'
-import { getSessionToken, getProfileId } from '@/lib/utils/session-token'
+import { getSessionToken, getProfileId, clearProfile } from '@/lib/utils/session-token'
 import type { ResultData } from '@/types'
 
 const STEP_TITLES = ['상황 요약', '서로의 진심', 'VonSim 통역', '앞으로의 약속']
@@ -32,6 +32,11 @@ function ResultPageInner() {
   const [loading, setLoading] = useState(true)
   const [saveLoading, setSaveLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setIsLoggedIn(!!getProfileId())
+  }, [])
 
   useEffect(() => {
     const sessionToken = getSessionToken()
@@ -103,12 +108,21 @@ function ResultPageInner() {
         showBack
         onBack={step > 1 ? () => setStep((s) => s - 1) : () => router.back()}
         rightSlot={
-          <button
-            className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#1a1a2e]"
-            onClick={() => router.push('/login')}
-          >
-            로그인
-          </button>
+          isLoggedIn ? (
+            <button
+              className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#a0a0b8]"
+              onClick={() => { clearProfile(); setIsLoggedIn(false) }}
+            >
+              로그아웃
+            </button>
+          ) : (
+            <button
+              className="border border-[#F0D0DC] bg-white rounded-full px-3 py-1 font-jua text-[13px] text-[#1a1a2e]"
+              onClick={() => router.push('/login')}
+            >
+              로그인
+            </button>
+          )
         }
       />
 

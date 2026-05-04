@@ -1,12 +1,31 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
+import { getProfileId, clearProfile } from '@/lib/utils/session-token'
 
 export default function HomePage() {
   const router = useRouter()
   const [showCodeInput, setShowCodeInput] = useState(false)
   const [code, setCode] = useState('')
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [hasPromises, setHasPromises] = useState(false)
+
+  useEffect(() => {
+    const profileId = getProfileId()
+    if (!profileId) return
+    setIsLoggedIn(true)
+    fetch('/api/promises', { headers: { 'x-profile-id': profileId } })
+      .then((r) => r.json())
+      .then((data) => { if (data.promises?.length > 0) setHasPromises(true) })
+      .catch(() => {})
+  }, [])
+
+  function handleLogout() {
+    clearProfile()
+    setIsLoggedIn(false)
+    setHasPromises(false)
+  }
 
   function handleCodeJoin() {
     if (code.length !== 6) return
@@ -22,12 +41,21 @@ export default function HomePage() {
           <span className="block w-[22px] h-[2.5px] rounded-full bg-text-muted" />
           <span className="block w-[22px] h-[2.5px] rounded-full bg-text-muted" />
         </button>
-        <button
-          className="border border-border bg-white rounded-full px-4 py-1.5 text-[15px] font-jua text-text-dark"
-          onClick={() => router.push('/login')}
-        >
-          로그인
-        </button>
+        {isLoggedIn ? (
+          <button
+            className="border border-border bg-white rounded-full px-4 py-1.5 text-[15px] font-jua text-text-muted"
+            onClick={handleLogout}
+          >
+            로그아웃
+          </button>
+        ) : (
+          <button
+            className="border border-border bg-white rounded-full px-4 py-1.5 text-[15px] font-jua text-text-dark"
+            onClick={() => router.push('/login')}
+          >
+            로그인
+          </button>
+        )}
       </header>
 
       {/* 떠다니는 하트 장식 */}
@@ -49,14 +77,11 @@ export default function HomePage() {
 
       {/* 메인 콘텐츠 */}
       <div className="flex-1 flex flex-col items-center justify-center px-5 -mt-8">
-        {/* 캐릭터 이미지 */}
         <img
           src="/characters.png"
           alt="본심 Von & Sim 캐릭터"
           className="w-[163px] h-[186px] object-contain"
         />
-
-        {/* 태그라인 (blur pill) */}
         <div className="relative mt-4 flex justify-center">
           <div className="absolute inset-0 bg-white rounded-full blur-[7px] scale-110" />
           <p className="relative text-[16px] font-jua text-text-muted text-center px-6 py-1">
@@ -76,6 +101,17 @@ export default function HomePage() {
           </span>
           방 만들기
         </Button>
+
+        {hasPromises && (
+          <div className="flex justify-center">
+            <button
+              className="text-[16px] font-jua text-primary underline underline-offset-2"
+              onClick={() => router.push('/promises')}
+            >
+              우리들의 약속 보기 →
+            </button>
+          </div>
+        )}
 
         {!showCodeInput ? (
           <div className="flex justify-center">
