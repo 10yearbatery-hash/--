@@ -181,8 +181,8 @@ function ChatPageInner() {
 
       {/* 입력창 */}
       {!sessionDone && (
-        <div className="px-4 pb-6 pt-3 bg-white flex items-end gap-3">
-          <div className="flex-1 flex items-center bg-[#f5f5f5] rounded-full px-4 py-2 min-h-[44px]">
+        <div className="px-4 pb-6 pt-3 bg-white flex items-end gap-2 w-full">
+          <div className="flex-1 min-w-0 flex items-center bg-[#f5f5f5] rounded-full px-4 py-2 min-h-[44px]">
             <textarea
               className="flex-1 bg-transparent placeholder:text-[#a0a0b8] text-[15px] resize-none outline-none font-light min-h-[24px] max-h-[80px] py-0.5"
               placeholder="솔직하게 털어놓아 보세요..."

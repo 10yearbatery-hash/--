@@ -31,11 +31,16 @@
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     background-color: var(--color-warm-white);
     color: var(--color-text-dark);
     max-width: 390px;
     margin: 0 auto;
+    overflow-x: hidden;
   }
 }
 
